@@ -1,21 +1,19 @@
 package com.benediktweyer.astarpathfinder;
 
-public class Tile {
+public class Node {
 	private int parentID;
-	private int x,y;
 	
 	private int GCost=0;
 	private int FCost;
 	private int HCost;
 	
-	private int nodeSpecial=0;
+	private NodeType nodeType = NodeType.PASSABLE;
 	
 	private boolean theWay=false;
 	private boolean passable=true;
 
-	public Tile(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public Node() {
+
 	}
 
 	public int getParentID() {
@@ -50,22 +48,6 @@ public class Tile {
 		HCost = hCost;
 	}
 
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
-	}
-
-	public int getNodeSpecial() {
-		return nodeSpecial;
-	}
-
-	public void setNodeSpecial(int nodeSpecial) {
-		this.nodeSpecial = nodeSpecial;
-	}
-
 	public boolean isTheWay() {
 		return theWay;
 	}
@@ -81,6 +63,15 @@ public class Tile {
 	public void setPassable(boolean passable) {
 		this.passable = passable;
 	}
+
+	public NodeType getNodeType() {
+		return nodeType;
+	}
+
+	public void setNodeType(NodeType nodeType) {
+		this.nodeType = nodeType;
+	}
+	
 	
 	
 }

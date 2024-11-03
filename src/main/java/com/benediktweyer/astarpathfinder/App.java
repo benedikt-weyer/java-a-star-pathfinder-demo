@@ -19,9 +19,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class App extends Application{
-	public static List<Tile> allList = new ArrayList<Tile>();
-	public static List<Tile> openList = new ArrayList<Tile>();
-	public static List<Tile> closedList = new ArrayList<Tile>();
+	public static List<Node> allList = new ArrayList<Node>();
+	public static List<Node> openList = new ArrayList<Node>();
+	public static List<Node> closedList = new ArrayList<Node>();
 	
 	public static int tileSize = 20;
 	public static int GCostMultiplier = 1;
@@ -32,14 +32,66 @@ public class App extends Application{
 		launch(args);
 	}
 
+	private Node[][] generateNodes2D(int xSize, int ySize){
+
+		Node[][] nodeMatrix = new Node[xSize][ySize];
+
+		for(int x=0; x<xSize; x++) {
+			for(int y=0; y<ySize; y++) {				
+				nodeMatrix[x][y] = new Node();
+			}
+		}
+		
+		return nodeMatrix;
+	}
+
+	private Point windowToNodePosition(int xWindow, int yWindow, int tileSize){
+		return new Point((int) Math.floor(xWindow / tileSize), (int) Math.floor(yWindow / tileSize));
+	}
+
+
+	private void render(Node[][] nodeMatrix, GraphicsContext gc, int tileSize, int windwoWidth, int windowHeight){
+		gc.clearRect(0, 0, 1600, 800);
+
+		for(int x=0; x<nodeMatrix.length; x++) {
+			for(int y=0; y<nodeMatrix[0].length; y++) {
+
+				Node node = nodeMatrix[x][y];
+
+				switch(node.getNodeType()) {
+					case PASSABLE:
+						gc.setFill(Color.WHITE);
+						break;
+					case UNPASSABLE:
+						gc.setFill(Color.BLACK);
+						break;
+					case START:
+						gc.setFill(Color.RED);
+						break;
+					case END:
+						gc.setFill(Color.PINK);
+						break;
+				}
+				
+				gc.fillRect(x*tileSize, y*tileSize, tileSize, tileSize);
+				gc.strokeRect(x*tileSize, y*tileSize, tileSize, tileSize);
+					
+			}
+		}
+
+	}
+
 	@Override
 	public void start(Stage stage) throws Exception {
+		int windwoWidth = 1600;
+		int windowHeight = 800;
+
 		Group g = new Group();
 		Scene scene = new Scene(g);
 		stage.setScene(scene);
 		
-		stage.setWidth(1600+6);
-		stage.setHeight(800+29);
+		stage.setWidth(windwoWidth);
+		stage.setHeight(windowHeight+40);
 		stage.setResizable(false);
 		stage.show();
 		
@@ -50,17 +102,54 @@ public class App extends Application{
 		GraphicsContext gc = c.getGraphicsContext2D();
 		
 		//gc.fillRect(0, 0, 1600, 800);
+
+		//generate node-list
+		Node[][] nodeMatrix = generateNodes2D(windwoWidth/tileSize, windowHeight/tileSize);
+
+		//specify start & end node
+		nodeMatrix[4][4].setNodeType(NodeType.START);
+		nodeMatrix[60][36].setNodeType(NodeType.END);
 		
-		
-		for(int x=0; x<1600; x+=tileSize) {
-			for(int y=0; y<800; y+=tileSize) {
-				gc.strokeRect(x, y, tileSize, tileSize);
-				
-				allList.add(new Tile(x/tileSize, y/tileSize));
+
+		//Create and start render loop
+		new AnimationTimer() {
+			@Override
+			public void handle(long time) {
+				//render
+				render(nodeMatrix, gc, tileSize, windwoWidth, windowHeight);
 			}
-		}
+		}.start();
 		
-		//specify start node
+
+		
+
+		EventHandler<MouseEvent> mousEventHandler = new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent e) {
+
+				Point tilePosition = windowToNodePosition((int) e.getX(), (int) e.getY(), tileSize);
+				
+				Node selectedNode = nodeMatrix[tilePosition.x][tilePosition.y];
+				
+				if(e.getButton() == MouseButton.PRIMARY) {
+					if(selectedNode.getNodeType() == NodeType.PASSABLE){
+						selectedNode.setNodeType(NodeType.UNPASSABLE);
+					}
+				}else if(e.getButton() == MouseButton.SECONDARY) {
+					if(selectedNode.getNodeType() == NodeType.UNPASSABLE){
+						selectedNode.setNodeType(NodeType.PASSABLE);
+					}
+				}
+
+			}
+		};
+		
+		scene.setOnMousePressed(mousEventHandler);
+		scene.setOnMouseDragged(mousEventHandler);
+
+		
+		/* //specify start node
 		allList.get(Util.getIndex(4, 4)).setNodeSpecial(1);
 		
 		//specify end node
@@ -72,7 +161,7 @@ public class App extends Application{
 			public void handle(long time) {
 				gc.clearRect(0, 0, 1600, 800);
 				
-				for(Tile t : allList) {
+				for(Node t : allList) {
 					if(t.getNodeSpecial() != 0) {
 						switch (t.getNodeSpecial()) {
 							case 1:
@@ -96,7 +185,7 @@ public class App extends Application{
 					
 				}
 				
-				for(Tile t : openList) {
+				for(Node t : openList) {
 					gc.setFill(Color.YELLOW);
 					gc.fillRect(t.getX()*tileSize, t.getY()*tileSize, tileSize, tileSize);
 					gc.setFill(Color.BLACK);
@@ -104,7 +193,7 @@ public class App extends Application{
 					
 				}
 				
-				for(Tile t : allList) {
+				for(Node t : allList) {
 					if(!t.isPassable()) {
 						gc.fillRect(t.getX()*tileSize, t.getY()*tileSize, tileSize, tileSize);
 					}
@@ -128,9 +217,9 @@ public class App extends Application{
 						
 						//pathfinding
 						Point startC=new Point(), endC=new Point();
-						Tile start=null, end=null;
+						Node start=null, end=null;
 						
-						for(Tile t : allList) {
+						for(Node t : allList) {
 							if(t.getNodeSpecial() != 0) {
 								switch (t.getNodeSpecial()) {
 									case 1:
@@ -151,7 +240,7 @@ public class App extends Application{
 						
 						
 						while(!closedList.contains(end)) {
-							Tile parent = allList.get(parentID);
+							Node parent = allList.get(parentID);
 							
 							addToOpenList(Util.getIndex(parent.getX(), parent.getY()-1), parentID);
 							addToOpenList(Util.getIndex(parent.getX()+1, parent.getY()-1), parentID);
@@ -162,9 +251,9 @@ public class App extends Application{
 							addToOpenList(Util.getIndex(parent.getX()-1, parent.getY()), parentID);
 							addToOpenList(Util.getIndex(parent.getX()-1, parent.getY()-1), parentID);
 							
-							Tile lowestFCostTile = null;
+							Node lowestFCostTile = null;
 							
-							for(Tile t : openList) {
+							for(Node t : openList) {
 								//t.setParent(parentID);
 								
 								
@@ -210,7 +299,7 @@ public class App extends Application{
 					}
 					
 					if(e.getCode() == KeyCode.DELETE) {
-						for(Tile t : allList) {
+						for(Node t : allList) {
 							//reset
 							t.setFCost(0);
 							t.setGCost(0);
@@ -245,7 +334,7 @@ public class App extends Application{
 				int index = Util.getIndex((p.x - (p.x % tileSize))/tileSize, (p.y - (p.y % tileSize))/tileSize);
 				
 				if(index != -1) {
-					Tile t = allList.get(index);
+					Node t = allList.get(index);
 					
 					if(t.getNodeSpecial() == 0) {
 						if(e.getButton() == MouseButton.PRIMARY) {
@@ -259,14 +348,14 @@ public class App extends Application{
 		};
 		
 		scene.setOnMousePressed(eh);
-		scene.setOnMouseDragged(eh);
+		scene.setOnMouseDragged(eh); */
 	}
 	
-	private static void addToOpenList(int index, int parentID) {
+	/* private static void addToOpenList(int index, int parentID) {
 		if(index != -1) {
-			Tile t = allList.get(index);
+			Node t = allList.get(index);
 			if(openList.contains(t)) {
-				Tile pt = allList.get(parentID);
+				Node pt = allList.get(parentID);
 				int i= 10*GCostMultiplier;
 				if(pt.getX() + pt.getY() == t.getX() + t.getY() + 2 || pt.getX() + pt.getY() == t.getX() + t.getY() -2) {
 					i=14*GCostMultiplier;
@@ -280,6 +369,6 @@ public class App extends Application{
 				t.setParent(parentID);
 			}
 		}
-	}
+	} */
 
 }
