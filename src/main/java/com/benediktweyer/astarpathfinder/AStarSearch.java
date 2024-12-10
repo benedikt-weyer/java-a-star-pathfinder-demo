@@ -11,6 +11,8 @@ public class AStarSearch {
     private Node startNode;
     private Node endNode;
 
+    private boolean foundPath = false;
+
     private double hCostMultiplier = 2;
 
     //private List<Node> allList = new ArrayList<>();
@@ -24,13 +26,13 @@ public class AStarSearch {
 
         this.currentNode = startNode;
         this.closedSet.add(startNode);
-        this.closedSet.add(endNode);
     }
 
 
     private Node currentNode = null;
 
     public boolean calculate(){
+        if(foundPath) return true;
 
         //move current node to closed list
         openSet.remove(currentNode);
@@ -41,7 +43,7 @@ public class AStarSearch {
             
             Node neighbourNode = nodeRelation.getTargetNode();
 
-            if(!closedSet.contains(neighbourNode) && neighbourNode.getNodeType() == NodeType.PASSABLE){
+            if(!closedSet.contains(neighbourNode) && neighbourNode.isPassable()){
                 double gCosts = currentNode.getGCost() + nodeRelation.getTravelCosts();
                 double fCosts = gCosts + nodeRelation.getTargetNode().getHCost() * hCostMultiplier;
     
@@ -49,7 +51,7 @@ public class AStarSearch {
                 if(neighbourNode.getFCost() > fCosts){
                     neighbourNode.setGCost(gCosts);
                     neighbourNode.setFCost(fCosts);
-                    neighbourNode.setParent(currentNode);
+                    neighbourNode.setParentNode(currentNode);
                 }
                 
     
@@ -70,13 +72,33 @@ public class AStarSearch {
 
         if(nextNode != null){
             currentNode = nextNode;
-
         }
         
-        
+
+        //check for end node
+        if(currentNode.equals(endNode)){
+            //found path!
+            foundPath = true;
+
+            //backtrace path
+            backtraceFoundPath(currentNode);
+            
+        }
 
 
-        return true;
+        return false;
+    }
+
+    private void backtraceFoundPath(Node endNode){
+
+        Node nextBacktraceNode = endNode;
+
+        while(!nextBacktraceNode.equals(startNode)){
+            nextBacktraceNode.setTheWay(true);
+            nextBacktraceNode = nextBacktraceNode.getParentNode();
+        }
+
+        startNode.setTheWay(true);
     }
 
     public Set<Node> getOpenSet() {

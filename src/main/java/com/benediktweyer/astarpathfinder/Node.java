@@ -21,11 +21,11 @@ public class Node {
 
 	}
 
-	public Node getParent() {
+	public Node getParentNode() {
 		return parentNode;
 	}
 
-	public void setParent(Node parentNode) {
+	public void setParentNode(Node parentNode) {
 		this.parentNode = parentNode;
 	}
 

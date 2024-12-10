@@ -103,10 +103,12 @@ public class App extends Application{
 				if(e.getButton() == MouseButton.PRIMARY) {
 					if(selectedNode.getNodeType() == NodeType.PASSABLE){
 						selectedNode.setNodeType(NodeType.UNPASSABLE);
+						selectedNode.setPassable(false);
 					}
 				}else if(e.getButton() == MouseButton.SECONDARY) {
 					if(selectedNode.getNodeType() == NodeType.UNPASSABLE){
 						selectedNode.setNodeType(NodeType.PASSABLE);
+						selectedNode.setPassable(true);
 					}
 				}
 
@@ -231,9 +233,7 @@ public class App extends Application{
 					gc.setFill(Color.BLACK);
 				}
 
-				if(node.isTheWay()){
-					gc.setFill(Color.GREEN);
-				}
+				
 
 				if(openList != null && openList.contains(node)){
 					gc.setFill(Color.YELLOW);
@@ -241,6 +241,10 @@ public class App extends Application{
 
 				if(closedList != null && closedList.contains(node)){
 					gc.setFill(Color.ORANGE);
+				}
+
+				if(node.isTheWay()){
+					gc.setFill(Color.GREEN);
 				}
 
 				if(node.getNodeType() == NodeType.START){
