@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Node {
-	private int parentID;
+	private Node parentNode;
 	
 	private double GCost=0;
-	private double FCost;
+	private double FCost=Double.MAX_VALUE;
 	private double HCost;
 	
 	private NodeType nodeType = NodeType.PASSABLE;
@@ -21,12 +21,12 @@ public class Node {
 
 	}
 
-	public int getParentID() {
-		return parentID;
+	public Node getParent() {
+		return parentNode;
 	}
 
-	public void setParent(int parentID) {
-		this.parentID = parentID;
+	public void setParent(Node parentNode) {
+		this.parentNode = parentNode;
 	}
 
 	public double getGCost() {
