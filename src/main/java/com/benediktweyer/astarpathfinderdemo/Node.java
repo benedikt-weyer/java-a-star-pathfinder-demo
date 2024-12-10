@@ -1,4 +1,4 @@
-package com.benediktweyer.astarpathfinder;
+package com.benediktweyer.astarpathfinderdemo;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.benediktweyer.astarpathfinder;
+package com.benediktweyer.astarpathfinderdemo;
 
 public class NodeRelation {
     private Node targetNode;
