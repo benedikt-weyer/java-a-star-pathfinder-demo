@@ -1,16 +1,21 @@
 package com.benediktweyer.astarpathfinder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Node {
 	private int parentID;
 	
-	private int GCost=0;
-	private int FCost;
-	private int HCost;
+	private double GCost=0;
+	private double FCost;
+	private double HCost;
 	
 	private NodeType nodeType = NodeType.PASSABLE;
 	
 	private boolean theWay=false;
 	private boolean passable=true;
+
+	private List<NodeRelation> nodeRelations = new ArrayList<>();
 
 	public Node() {
 
@@ -24,27 +29,27 @@ public class Node {
 		this.parentID = parentID;
 	}
 
-	public int getGCost() {
+	public double getGCost() {
 		return GCost;
 	}
 
-	public void setGCost(int gCost) {
+	public void setGCost(double gCost) {
 		GCost = gCost;
 	}
 
-	public int getFCost() {
+	public double getFCost() {
 		return FCost;
 	}
 
-	public void setFCost(int fCost) {
+	public void setFCost(double fCost) {
 		FCost = fCost;
 	}
 
-	public int getHCost() {
+	public double getHCost() {
 		return HCost;
 	}
 
-	public void setHCost(int hCost) {
+	public void setHCost(double hCost) {
 		HCost = hCost;
 	}
 
@@ -70,6 +75,16 @@ public class Node {
 
 	public void setNodeType(NodeType nodeType) {
 		this.nodeType = nodeType;
+	}
+
+	public List<NodeRelation> getNodeRelations() {
+		return nodeRelations;
+	}
+
+	@Override
+	public String toString() {
+		return "Node [GCost=" + GCost + ", FCost=" + FCost + ", HCost=" + HCost + ", nodeType=" + nodeType + ", theWay="
+				+ theWay + ", passable=" + passable + ", nodeRelations=" + nodeRelations + "]";
 	}
 	
 	
