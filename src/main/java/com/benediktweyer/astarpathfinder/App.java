@@ -199,6 +199,7 @@ public class App extends Application{
 		return nodeMatrix;
 	}
 
+	
 	private void calculateHCostsNodes2D(Node[][] nodeMatrix, int endNodeX, int endNodeY){
 
 		for(int x=0; x<nodeMatrix.length; x++) {
@@ -208,6 +209,7 @@ public class App extends Application{
 			}
 		}
 	}
+
 
 	private Point windowToNodePosition(int xWindow, int yWindow, int tileSize){
 		return new Point((int) Math.floor(xWindow / tileSize), (int) Math.floor(yWindow / tileSize));
