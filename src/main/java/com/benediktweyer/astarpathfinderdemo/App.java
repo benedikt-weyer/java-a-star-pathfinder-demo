@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import io.github.benediktweyer.astarpathfinder.AStarPathfinder;
+import io.github.benediktweyer.astarpathfinder.Node;
+import io.github.benediktweyer.astarpathfinder.NodeRelation;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -21,9 +24,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class App extends Application{
-	public static List<Node> allList = new ArrayList<Node>();
-	public static List<Node> openList = new ArrayList<Node>();
-	public static List<Node> closedList = new ArrayList<Node>();
 	
 	public static int tileSize = 20;
 	public static int GCostMultiplier = 1;
@@ -63,20 +63,15 @@ public class App extends Application{
 		int startNodeX=4, startNodeY=4;
 		int endNodeX = 60, endNodeY = 36;
 
-		nodeMatrix[startNodeX][startNodeY].setNodeType(NodeType.START);
-		nodeMatrix[endNodeX][endNodeY].setNodeType(NodeType.END);
+		Node startNode = nodeMatrix[startNodeX][startNodeY];
+		Node endNode = nodeMatrix[endNodeX][endNodeY];
 
 		//calculate H-Costs
 		calculateHCostsNodes2D(nodeMatrix, endNodeX, endNodeY);
 
 
-		//flaten node matrix
-		List<Node> nodeList = Arrays.stream(nodeMatrix)
-                .flatMap(Arrays::stream)
-                .toList();
-
 		//create AStarSearch object
-		AStarSearch aStarSearch = new AStarSearch(nodeList, nodeMatrix[startNodeX][startNodeY], nodeMatrix[endNodeX][endNodeY]);
+		AStarPathfinder aStarSearch = new AStarPathfinder(startNode, endNode);
 		
 
 		//Create and start render loop
@@ -84,7 +79,7 @@ public class App extends Application{
 			@Override
 			public void handle(long time) {
 				//render
-				render(nodeMatrix, gc, tileSize, windwoWidth, windowHeight, aStarSearch.getOpenSet(), aStarSearch.getClosedSet());
+				render(nodeMatrix, gc, tileSize, windwoWidth, windowHeight, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 			}
 		}.start();
 		
@@ -101,13 +96,11 @@ public class App extends Application{
 				Node selectedNode = nodeMatrix[tilePosition.x][tilePosition.y];
 				
 				if(e.getButton() == MouseButton.PRIMARY) {
-					if(selectedNode.getNodeType() == NodeType.PASSABLE){
-						selectedNode.setNodeType(NodeType.UNPASSABLE);
+					if(selectedNode.isPassable()){
 						selectedNode.setPassable(false);
 					}
 				}else if(e.getButton() == MouseButton.SECONDARY) {
-					if(selectedNode.getNodeType() == NodeType.UNPASSABLE){
-						selectedNode.setNodeType(NodeType.PASSABLE);
+					if(!selectedNode.isPassable()){
 						selectedNode.setPassable(true);
 					}
 				}
@@ -217,7 +210,7 @@ public class App extends Application{
 
 
 
-	private void render(Node[][] nodeMatrix, GraphicsContext gc, int tileSize, int windwoWidth, int windowHeight, Set<Node> openList, Set<Node> closedList){
+	private void render(Node[][] nodeMatrix, GraphicsContext gc, int tileSize, int windwoWidth, int windowHeight, Set<Node> openList, Set<Node> closedList, Node startNode, Node endNode){
 		gc.clearRect(0, 0, 1600, 800);
 
 		for(int x=0; x<nodeMatrix.length; x++) {
@@ -227,11 +220,11 @@ public class App extends Application{
 
 				
 
-				if(node.getNodeType() == NodeType.PASSABLE){
+				if(node.isPassable()){
 					gc.setFill(Color.WHITE);
 				}
 
-				if(node.getNodeType() == NodeType.UNPASSABLE){
+				if(!node.isPassable()){
 					gc.setFill(Color.BLACK);
 				}
 
@@ -249,11 +242,11 @@ public class App extends Application{
 					gc.setFill(Color.GREEN);
 				}
 
-				if(node.getNodeType() == NodeType.START){
+				if(node.equals(startNode)){
 					gc.setFill(Color.RED);
 				}
 
-				if(node.getNodeType() == NodeType.END){
+				if(node.equals(endNode)){
 					gc.setFill(Color.PINK);
 				}
 
