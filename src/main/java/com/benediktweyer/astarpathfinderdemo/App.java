@@ -29,7 +29,7 @@ public class App extends Application{
 	// Set basic JavaFX GUI parameters
 	final int WINDOW_WIDTH = 1600;
 	final int WINDOW_HEIGHT = 800;
-	final int TILE_SIZE = 20; // Assuming tileSize is 20, replace with actual value
+	final int TILE_SIZE = 20;
 
 
 	public static void main(String[] args) {
@@ -41,38 +41,41 @@ public class App extends Application{
 		// Create root node (StackPane)
         StackPane root = new StackPane();
 
+		// Create a scene with the specified width and height
 		Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 		
+		// Stage configuration
 		stage.setScene(scene);
 		stage.setResizable(false);
 		stage.show();
 		
 		
-		//Canvas
+		// Create a canvas with the same width and height as the scene
 		Canvas canvas = new Canvas(scene.getWidth(), scene.getHeight());
 		root.getChildren().add(canvas);
+		// Get the graphics context of the canvas
 		GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
 		
 
-		//generate node-list
+		// Generate a 2D array of nodes based on the canvas size and tile size
 		Node[][] nodeMatrix = generateNodes2D((int) Math.floor(canvas.getWidth()/TILE_SIZE), (int) Math.floor(canvas.getHeight()/TILE_SIZE));
 
-		//specify start & end node
+		// Specify the start and end nodes
 		int startNodeX=4, startNodeY=4;
 		int endNodeX = 60, endNodeY = 36;
 
 		Node startNode = nodeMatrix[startNodeX][startNodeY];
 		Node endNode = nodeMatrix[endNodeX][endNodeY];
 
-		//calculate H-Costs
+		// Calculate the H-Costs for the nodes
 		calculateHCostsNodes2D(nodeMatrix, endNodeX, endNodeY);
 
 
-		//create AStarSearch object
+		// Create an AStarPathfinder object with the start and end nodes
 		AStarPathfinder aStarSearch = new AStarPathfinder(startNode, endNode);
 		
 
-		//Create and start render loop
+		// Create and start the render loop
 		new AnimationTimer() {
 			@Override
 			public void handle(long time) {
