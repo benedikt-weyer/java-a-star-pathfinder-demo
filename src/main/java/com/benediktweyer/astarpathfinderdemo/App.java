@@ -24,11 +24,12 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class App extends Application{
-	
-	public static int tileSize = 20;
-	public static int GCostMultiplier = 1;
-	
-	public static boolean reset=true;
+
+	// Set basic JavaFX GUI parameters
+	final int WINDOW_WIDTH = 1600;
+	final int WINDOW_HEIGHT = 800;
+	final int TILE_SIZE = 20; // Assuming tileSize is 20, replace with actual value
+
 
 	public static void main(String[] args) {
 		launch(args);
@@ -36,16 +37,13 @@ public class App extends Application{
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		//set basic jafafx gui parameters
-		int windwoWidth = 1600;
-		int windowHeight = 800;
 
 		Group g = new Group();
 		Scene scene = new Scene(g);
 		stage.setScene(scene);
 		
-		stage.setWidth(windwoWidth);
-		stage.setHeight(windowHeight+40);
+		stage.setWidth(WINDOW_WIDTH);
+		stage.setHeight(WINDOW_HEIGHT);
 		stage.setResizable(false);
 		stage.show();
 		
@@ -57,7 +55,7 @@ public class App extends Application{
 		
 
 		//generate node-list
-		Node[][] nodeMatrix = generateNodes2D(windwoWidth/tileSize, windowHeight/tileSize);
+		Node[][] nodeMatrix = generateNodes2D(WINDOW_WIDTH/TILE_SIZE, WINDOW_HEIGHT/TILE_SIZE);
 
 		//specify start & end node
 		int startNodeX=4, startNodeY=4;
@@ -79,7 +77,7 @@ public class App extends Application{
 			@Override
 			public void handle(long time) {
 				//render
-				render(nodeMatrix, gc, tileSize, windwoWidth, windowHeight, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
+				render(nodeMatrix, gc, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 			}
 		}.start();
 		
@@ -91,7 +89,7 @@ public class App extends Application{
 			@Override
 			public void handle(MouseEvent e) {
 
-				Point tilePosition = windowToNodePosition((int) e.getX(), (int) e.getY(), tileSize);
+				Point tilePosition = windowToNodePosition((int) e.getX(), (int) e.getY(), TILE_SIZE);
 				
 				Node selectedNode = nodeMatrix[tilePosition.x][tilePosition.y];
 				
