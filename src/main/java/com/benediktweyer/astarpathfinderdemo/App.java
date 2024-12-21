@@ -20,6 +20,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -37,25 +38,24 @@ public class App extends Application{
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		// Create root node (StackPane)
+        StackPane root = new StackPane();
 
-		Group g = new Group();
-		Scene scene = new Scene(g);
-		stage.setScene(scene);
+		Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 		
-		stage.setWidth(WINDOW_WIDTH);
-		stage.setHeight(WINDOW_HEIGHT);
+		stage.setScene(scene);
 		stage.setResizable(false);
 		stage.show();
 		
 		
 		//Canvas
-		Canvas c = new Canvas(stage.getWidth(), stage.getHeight());
-		g.getChildren().add(c);
+		Canvas c = new Canvas(scene.getWidth(), scene.getHeight());
+		root.getChildren().add(c);
 		GraphicsContext gc = c.getGraphicsContext2D();
 		
 
 		//generate node-list
-		Node[][] nodeMatrix = generateNodes2D(WINDOW_WIDTH/TILE_SIZE, WINDOW_HEIGHT/TILE_SIZE);
+		Node[][] nodeMatrix = generateNodes2D((int) Math.floor(c.getWidth()/TILE_SIZE), (int) Math.floor(c.getHeight()/TILE_SIZE));
 
 		//specify start & end node
 		int startNodeX=4, startNodeY=4;
