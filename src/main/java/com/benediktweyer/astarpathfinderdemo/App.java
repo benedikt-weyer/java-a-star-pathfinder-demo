@@ -49,13 +49,13 @@ public class App extends Application{
 		
 		
 		//Canvas
-		Canvas c = new Canvas(scene.getWidth(), scene.getHeight());
-		root.getChildren().add(c);
-		GraphicsContext gc = c.getGraphicsContext2D();
+		Canvas canvas = new Canvas(scene.getWidth(), scene.getHeight());
+		root.getChildren().add(canvas);
+		GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
 		
 
 		//generate node-list
-		Node[][] nodeMatrix = generateNodes2D((int) Math.floor(c.getWidth()/TILE_SIZE), (int) Math.floor(c.getHeight()/TILE_SIZE));
+		Node[][] nodeMatrix = generateNodes2D((int) Math.floor(canvas.getWidth()/TILE_SIZE), (int) Math.floor(canvas.getHeight()/TILE_SIZE));
 
 		//specify start & end node
 		int startNodeX=4, startNodeY=4;
@@ -77,7 +77,7 @@ public class App extends Application{
 			@Override
 			public void handle(long time) {
 				//render
-				render(nodeMatrix, gc, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
+				render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 			}
 		}.start();
 		
@@ -117,7 +117,7 @@ public class App extends Application{
 					if(e.getCode() == KeyCode.ENTER){
 						aStarSearch.calculate();
 
-						//render(nodeMatrix, gc, tileSize, windwoWidth, windowHeight, aStarSearch.getOpenSet(), aStarSearch.getClosedSet());
+						//render(nodeMatrix, graphicsContext, tileSize, windwoWidth, windowHeight, aStarSearch.getOpenSet(), aStarSearch.getClosedSet());
 					}
 				}
 			}
@@ -208,8 +208,8 @@ public class App extends Application{
 
 
 
-	private void render(Node[][] nodeMatrix, GraphicsContext gc, int tileSize, int windwoWidth, int windowHeight, Set<Node> openList, Set<Node> closedList, Node startNode, Node endNode){
-		gc.clearRect(0, 0, 1600, 800);
+	private void render(Node[][] nodeMatrix, GraphicsContext graphicsContext, int tileSize, int windwoWidth, int windowHeight, Set<Node> openList, Set<Node> closedList, Node startNode, Node endNode){
+		graphicsContext.clearRect(0, 0, 1600, 800);
 
 		for(int x=0; x<nodeMatrix.length; x++) {
 			for(int y=0; y<nodeMatrix[0].length; y++) {
@@ -219,39 +219,39 @@ public class App extends Application{
 				
 
 				if(node.isPassable()){
-					gc.setFill(Color.WHITE);
+					graphicsContext.setFill(Color.WHITE);
 				}
 
 				if(!node.isPassable()){
-					gc.setFill(Color.BLACK);
+					graphicsContext.setFill(Color.BLACK);
 				}
 
 				
 
 				if(openList != null && openList.contains(node)){
-					gc.setFill(Color.YELLOW);
+					graphicsContext.setFill(Color.YELLOW);
 				}
 
 				if(closedList != null && closedList.contains(node)){
-					gc.setFill(Color.ORANGE);
+					graphicsContext.setFill(Color.ORANGE);
 				}
 
 				if(node.isTheWay()){
-					gc.setFill(Color.GREEN);
+					graphicsContext.setFill(Color.GREEN);
 				}
 
 				if(node.equals(startNode)){
-					gc.setFill(Color.RED);
+					graphicsContext.setFill(Color.RED);
 				}
 
 				if(node.equals(endNode)){
-					gc.setFill(Color.PINK);
+					graphicsContext.setFill(Color.PINK);
 				}
 
 				
 				
-				gc.fillRect(x*tileSize, y*tileSize, tileSize, tileSize);
-				gc.strokeRect(x*tileSize, y*tileSize, tileSize, tileSize);
+				graphicsContext.fillRect(x*tileSize, y*tileSize, tileSize, tileSize);
+				graphicsContext.strokeRect(x*tileSize, y*tileSize, tileSize, tileSize);
 					
 			}
 		}
