@@ -1,12 +1,9 @@
 package com.benediktweyer.astarpathfinderdemo;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
 
 import io.github.benediktweyer.astarpathfinder.AStarPathfinder;
 import io.github.benediktweyer.astarpathfinder.Node;
-import io.github.benediktweyer.astarpathfinder.NodeRelation;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
