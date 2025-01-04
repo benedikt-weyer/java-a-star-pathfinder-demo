@@ -49,9 +49,11 @@ public class App extends Application{
 		PathfinderCanvas pathfinderCanvas = new PathfinderCanvas((int) scene.getWidth(), (int) scene.getHeight());
 		root.getChildren().add(pathfinderCanvas);
 		
+		// Create a NodeMatrixGenerator object
+		NodeMatrixGenerator nodeMatrixGenerator = new NodeMatrixGenerator();
 
 		// Generate a 2D array of nodes based on the canvas size and tile size
-		Node[][] nodeMatrix = generateNodes2D((int) Math.floor(scene.getWidth()/TILE_SIZE), (int) Math.floor(scene.getHeight()/TILE_SIZE));
+		Node[][] nodeMatrix = nodeMatrixGenerator.generateNodes2D((int) Math.floor(scene.getWidth()/TILE_SIZE), (int) Math.floor(scene.getHeight()/TILE_SIZE));
 
 		// Specify the start and end nodes
 		int startNodeX=4, startNodeY=4;
@@ -61,7 +63,7 @@ public class App extends Application{
 		Node endNode = nodeMatrix[endNodeX][endNodeY];
 
 		// Calculate the H-Costs for the nodes
-		calculateHCostsNodes2D(nodeMatrix, endNodeX, endNodeY);
+		nodeMatrixGenerator.calculateHCostsNodes2D(nodeMatrix, endNodeX, endNodeY);
 
 
 		// Create an AStarPathfinder object with the start and end nodes
@@ -122,96 +124,6 @@ public class App extends Application{
 		pathfinderCanvas.render(nodeMatrix, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 	}
 
-	/**
-	 * Generates a 2D array of nodes with the specified x and y size
-	 * @param xSize
-	 * @param ySize
-	 * @return a 2D array of nodes
-	 */
-	private Node[][] generateNodes2D(int xSize, int ySize){
-		// create node matrix
-		Node[][] nodeMatrix = new Node[xSize][ySize];
-
-		// create and add nodes
-		for(int x=0; x<xSize; x++) {
-			for(int y=0; y<ySize; y++) {				
-				nodeMatrix[x][y] = new Node();
-			}
-		}
-
-		// create and add node relations
-		for(int x=0; x<xSize; x++) {
-			for(int y=0; y<ySize; y++) {
-				List<NodeRelation> nodeRelations = new ArrayList<>();
-
-				// up
-				if(y>0){
-					NodeRelation upNodeRelation = new NodeRelation(nodeMatrix[x][y-1], 1);
-					nodeRelations.add(upNodeRelation);
-				}
-				// up right
-				if(y>0 && x < xSize - 1){
-					NodeRelation upRightNodeRelation = new NodeRelation(nodeMatrix[x+1][y-1], 1.4);
-					nodeRelations.add(upRightNodeRelation);
-				}
-				// right
-				if(x < xSize - 1){
-					NodeRelation rightNodeRelation = new NodeRelation(nodeMatrix[x+1][y], 1);
-					nodeRelations.add(rightNodeRelation);
-				}
-				// down right
-				if(y < ySize - 1 && x < xSize - 1){
-					NodeRelation downRightNodeRelation = new NodeRelation(nodeMatrix[x+1][y+1], 1.4);
-					nodeRelations.add(downRightNodeRelation);
-				}
-				// down
-				if(y < ySize - 1){
-					NodeRelation downNodeRelation = new NodeRelation(nodeMatrix[x][y+1], 1);
-					nodeRelations.add(downNodeRelation);
-				}
-				// down left
-				if(y < ySize - 1 && x>0){
-					NodeRelation downLeftNodeRelation = new NodeRelation(nodeMatrix[x-1][y+1], 1.4);
-					nodeRelations.add(downLeftNodeRelation);
-				}
-				// left
-				if(x>0){
-					NodeRelation leftNodeRelation = new NodeRelation(nodeMatrix[x-1][y], 1);
-					nodeRelations.add(leftNodeRelation);
-				}
-				// up left
-				if(y>0 && x>0){
-					NodeRelation upLeftNodeRelation = new NodeRelation(nodeMatrix[x-1][y-1], 1.4);
-					nodeRelations.add(upLeftNodeRelation);
-				}
-
-				//set node relation
-				nodeMatrix[x][y].getNodeRelations().addAll(nodeRelations);
-			}
-		}
-		
-		return nodeMatrix;
-	}
-
-	/**
-	 * Calculates the H-Costs for the nodes based on the end node position in a 2D array of nodes.
-	 * The H-Costs are calculated by the Manhattan distance between the node and the end node.
-	 * The H-Costs are stored in the nodes.
-	 * @param nodeMatrix
-	 * @param endNodeX
-	 * @param endNodeY
-	 */
-	private void calculateHCostsNodes2D(Node[][] nodeMatrix, int endNodeX, int endNodeY){
-		// loop through the node matrix and calculate the H-Costs
-		for(int x=0; x<nodeMatrix.length; x++) {
-			for(int y=0; y<nodeMatrix[0].length; y++) {
-				// calculate H-Costs
-				double hCosts = (Math.abs(endNodeX-x) + Math.abs(endNodeY-y)) / 2d;
-				// set H-Costs
-				nodeMatrix[x][y].setHCost(hCosts);
-			}
-		}
-	}
 
 	/**
 	 * Converts the window position to a node position in a 2D array of nodes
