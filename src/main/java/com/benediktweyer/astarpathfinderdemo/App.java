@@ -2,17 +2,14 @@ package com.benediktweyer.astarpathfinderdemo;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 import io.github.benediktweyer.astarpathfinder.AStarPathfinder;
 import io.github.benediktweyer.astarpathfinder.Node;
 import io.github.benediktweyer.astarpathfinder.NodeRelation;
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
