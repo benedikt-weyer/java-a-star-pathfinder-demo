@@ -3,22 +3,19 @@ package com.benediktweyer.astarpathfinderdemo;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import io.github.benediktweyer.astarpathfinder.AStarPathfinder;
 import io.github.benediktweyer.astarpathfinder.Node;
 import io.github.benediktweyer.astarpathfinder.NodeRelation;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class App extends Application{
@@ -47,15 +44,14 @@ public class App extends Application{
 		stage.show();
 		
 		
-		// Create a canvas with the same width and height as the scene
-		Canvas canvas = new Canvas(scene.getWidth(), scene.getHeight());
-		root.getChildren().add(canvas);
-		// Get the graphics context of the canvas
-		GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+		// Initialize the pathfinder visualization canvas
+        // The canvas dimensions match the scene size for full window coverage
+		PathfinderCanvas pathfinderCanvas = new PathfinderCanvas((int) scene.getWidth(), (int) scene.getHeight());
+		root.getChildren().add(pathfinderCanvas);
 		
 
 		// Generate a 2D array of nodes based on the canvas size and tile size
-		Node[][] nodeMatrix = generateNodes2D((int) Math.floor(canvas.getWidth()/TILE_SIZE), (int) Math.floor(canvas.getHeight()/TILE_SIZE));
+		Node[][] nodeMatrix = generateNodes2D((int) Math.floor(scene.getWidth()/TILE_SIZE), (int) Math.floor(scene.getHeight()/TILE_SIZE));
 
 		// Specify the start and end nodes
 		int startNodeX=4, startNodeY=4;
@@ -95,7 +91,7 @@ public class App extends Application{
 				}
 
 				// rerender the nodes
-				render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
+				pathfinderCanvas.render(nodeMatrix, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 			}
 		};
 		
@@ -115,7 +111,7 @@ public class App extends Application{
 						aStarSearch.calculate();
 
 						// rerender the nodes
-						render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
+						pathfinderCanvas.render(nodeMatrix, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 					}
 				}
 			}
@@ -123,7 +119,7 @@ public class App extends Application{
 
 
 		// initial render
-		render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
+		pathfinderCanvas.render(nodeMatrix, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 	}
 
 	/**
@@ -227,70 +223,5 @@ public class App extends Application{
 	private Point windowToNodePosition(int xWindow, int yWindow, int tileSize){
 		return new Point((int) Math.floor(xWindow / tileSize), (int) Math.floor(yWindow / tileSize));
 	}
-
-
-	/**
-	 * Renders the nodes on the canvas
-	 * @param nodeMatrix
-	 * @param graphicsContext
-	 * @param tileSize
-	 * @param windwoWidth
-	 * @param windowHeight
-	 * @param openList
-	 * @param closedList
-	 * @param startNode
-	 * @param endNode
-	 */
-	private void render(Node[][] nodeMatrix, GraphicsContext graphicsContext, int tileSize, int windwoWidth, int windowHeight, Set<Node> openList, Set<Node> closedList, Node startNode, Node endNode){
-		
-		// clear the canvas
-		graphicsContext.clearRect(0, 0, 1600, 800);
-
-		// loop through the node matrix and render the nodes
-		for(int x=0; x<nodeMatrix.length; x++) {
-			for(int y=0; y<nodeMatrix[0].length; y++) {
-
-				// get the node at the position
-				Node node = nodeMatrix[x][y];
-
-				// if the node is passable, set the fill color to white
-				if(node.isPassable()){
-					graphicsContext.setFill(Color.WHITE);
-				}
-				// if the node is not passable, set the fill color to black
-				if(!node.isPassable()){
-					graphicsContext.setFill(Color.BLACK);
-				}
-
-				
-				// if the node is in the open list, set the fill color to yellow
-				if(openList != null && openList.contains(node)){
-					graphicsContext.setFill(Color.YELLOW);
-				}
-				// if the node is in the closed list, set the fill color to orange
-				if(closedList != null && closedList.contains(node)){
-					graphicsContext.setFill(Color.ORANGE);
-				}
-				// if the node is the way, set the fill color to green
-				if(node.isTheWay()){
-					graphicsContext.setFill(Color.GREEN);
-				}
-				// if the node is the start node, set the fill color to red
-				if(node.equals(startNode)){
-					graphicsContext.setFill(Color.RED);
-				}
-				// if the node is the end node, set the fill color to pink
-				if(node.equals(endNode)){
-					graphicsContext.setFill(Color.PINK);
-				}
-
-				
-				// draw the node
-				graphicsContext.fillRect(x*tileSize, y*tileSize, tileSize, tileSize);
-				graphicsContext.strokeRect(x*tileSize, y*tileSize, tileSize, tileSize);
-			}
-		}
-
-	}
-
+	
 }
