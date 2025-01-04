@@ -7,7 +7,7 @@ import io.github.benediktweyer.astarpathfinder.Node;
 import io.github.benediktweyer.astarpathfinder.NodeRelation;
 
 public class NodeMatrixGenerator {
-    private static final int TILE_SIZE = 20;
+
 
     /**
 	 * Generates a 2D array of nodes with the specified x and y size
