@@ -75,18 +75,6 @@ public class App extends Application{
 		AStarPathfinder aStarSearch = new AStarPathfinder(startNode, endNode);
 		
 
-		// Create and start the render loop
-		new AnimationTimer() {
-			@Override
-			public void handle(long time) {
-				//render
-				render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
-			}
-		}.start();
-		
-
-		
-
 		EventHandler<MouseEvent> mousEventHandler = new EventHandler<MouseEvent>() {
 
 			@Override
@@ -106,6 +94,8 @@ public class App extends Application{
 					}
 				}
 
+				render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
+
 			}
 		};
 		
@@ -120,11 +110,14 @@ public class App extends Application{
 					if(e.getCode() == KeyCode.ENTER){
 						aStarSearch.calculate();
 
-						//render(nodeMatrix, graphicsContext, tileSize, windwoWidth, windowHeight, aStarSearch.getOpenSet(), aStarSearch.getClosedSet());
+						render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 					}
 				}
 			}
 		});
+
+
+		render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 	}
 
 
