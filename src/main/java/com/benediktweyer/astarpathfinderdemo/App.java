@@ -48,12 +48,9 @@ public class App extends Application{
         // The canvas dimensions match the scene size for full window coverage
 		PathfinderCanvas pathfinderCanvas = new PathfinderCanvas((int) scene.getWidth(), (int) scene.getHeight());
 		root.getChildren().add(pathfinderCanvas);
-		
-		// Create a NodeMatrixGenerator object
-		NodeMatrixGenerator nodeMatrixGenerator = new NodeMatrixGenerator();
 
 		// Generate a 2D array of nodes based on the canvas size and tile size
-		Node[][] nodeMatrix = nodeMatrixGenerator.generateNodes2D((int) Math.floor(scene.getWidth()/TILE_SIZE), (int) Math.floor(scene.getHeight()/TILE_SIZE));
+		Node[][] nodeMatrix = NodeMatrixGenerator.generateNodes2D((int) Math.floor(scene.getWidth()/TILE_SIZE), (int) Math.floor(scene.getHeight()/TILE_SIZE));
 
 		// Specify the start and end nodes
 		int startNodeX=4, startNodeY=4;
@@ -63,7 +60,7 @@ public class App extends Application{
 		Node endNode = nodeMatrix[endNodeX][endNodeY];
 
 		// Calculate the H-Costs for the nodes
-		nodeMatrixGenerator.calculateHCostsNodes2D(nodeMatrix, endNodeX, endNodeY);
+		NodeMatrixGenerator.calculateHCostsNodes2D(nodeMatrix, endNodeX, endNodeY);
 
 
 		// Create an AStarPathfinder object with the start and end nodes

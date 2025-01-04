@@ -15,7 +15,7 @@ public class NodeMatrixGenerator {
 	 * @param ySize
 	 * @return a 2D array of nodes
 	 */
-	public Node[][] generateNodes2D(int xSize, int ySize){
+	public static Node[][] generateNodes2D(int xSize, int ySize){
 		// create node matrix
 		Node[][] nodeMatrix = new Node[xSize][ySize];
 
@@ -88,7 +88,7 @@ public class NodeMatrixGenerator {
 	 * @param endNodeX
 	 * @param endNodeY
 	 */
-	public void calculateHCostsNodes2D(Node[][] nodeMatrix, int endNodeX, int endNodeY){
+	public static void calculateHCostsNodes2D(Node[][] nodeMatrix, int endNodeX, int endNodeY){
 		// loop through the node matrix and calculate the H-Costs
 		for(int x=0; x<nodeMatrix.length; x++) {
 			for(int y=0; y<nodeMatrix[0].length; y++) {
