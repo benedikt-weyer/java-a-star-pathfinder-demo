@@ -75,15 +75,18 @@ public class App extends Application{
 		AStarPathfinder aStarSearch = new AStarPathfinder(startNode, endNode);
 		
 
+		// Create new mouse event handler
 		EventHandler<MouseEvent> mousEventHandler = new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent e) {
-
+				// get position of the tile in the node matrix based on the mouse position
 				Point tilePosition = windowToNodePosition((int) e.getX(), (int) e.getY(), TILE_SIZE);
-				
+
+				// get the node with the tile position
 				Node selectedNode = nodeMatrix[tilePosition.x][tilePosition.y];
 				
+				// set the node to passable or not passable based on the mouse button
 				if(e.getButton() == MouseButton.PRIMARY) {
 					if(selectedNode.isPassable()){
 						selectedNode.setPassable(false);
@@ -94,22 +97,27 @@ public class App extends Application{
 					}
 				}
 
+				// rerender the nodes
 				render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
-
 			}
 		};
 		
+		// Set the mouse event handlers for the scene
 		scene.setOnMousePressed(mousEventHandler);
 		scene.setOnMouseDragged(mousEventHandler);
 
+		
+		// Set the key event handler for the scene
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			@Override
 			public void handle(KeyEvent e) {
+				// if the enter key is pressed, calculate the path
 				if(e.getEventType() == KeyEvent.KEY_PRESSED) {
 					if(e.getCode() == KeyCode.ENTER){
 						aStarSearch.calculate();
 
+						// rerender the nodes
 						render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 					}
 				}
@@ -117,22 +125,28 @@ public class App extends Application{
 		});
 
 
+		// initial render
 		render(nodeMatrix, graphicsContext, TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT, aStarSearch.getOpenSet(), aStarSearch.getClosedSet(), startNode, endNode);
 	}
 
-
+	/**
+	 * Generates a 2D array of nodes with the specified x and y size
+	 * @param xSize
+	 * @param ySize
+	 * @return a 2D array of nodes
+	 */
 	private Node[][] generateNodes2D(int xSize, int ySize){
-
+		// create node matrix
 		Node[][] nodeMatrix = new Node[xSize][ySize];
 
-		//create Nodes
+		// create and add nodes
 		for(int x=0; x<xSize; x++) {
 			for(int y=0; y<ySize; y++) {				
 				nodeMatrix[x][y] = new Node();
 			}
 		}
 
-		//create and add node relations
+		// create and add node relations
 		for(int x=0; x<xSize; x++) {
 			for(int y=0; y<ySize; y++) {
 				List<NodeRelation> nodeRelations = new ArrayList<>();
@@ -186,69 +200,97 @@ public class App extends Application{
 		return nodeMatrix;
 	}
 
-	
+	/**
+	 * Calculates the H-Costs for the nodes based on the end node position in a 2D array of nodes.
+	 * The H-Costs are calculated by the Manhattan distance between the node and the end node.
+	 * The H-Costs are stored in the nodes.
+	 * @param nodeMatrix
+	 * @param endNodeX
+	 * @param endNodeY
+	 */
 	private void calculateHCostsNodes2D(Node[][] nodeMatrix, int endNodeX, int endNodeY){
-
+		// loop through the node matrix and calculate the H-Costs
 		for(int x=0; x<nodeMatrix.length; x++) {
 			for(int y=0; y<nodeMatrix[0].length; y++) {
+				// calculate H-Costs
 				double hCosts = (Math.abs(endNodeX-x) + Math.abs(endNodeY-y)) / 2d;
+				// set H-Costs
 				nodeMatrix[x][y].setHCost(hCosts);
 			}
 		}
 	}
 
-
+	/**
+	 * Converts the window position to a node position in a 2D array of nodes
+	 * @param xWindow
+	 * @param yWindow
+	 * @param tileSize
+	 * @return a point with the node position
+	 */
 	private Point windowToNodePosition(int xWindow, int yWindow, int tileSize){
 		return new Point((int) Math.floor(xWindow / tileSize), (int) Math.floor(yWindow / tileSize));
 	}
 
 
-
+	/**
+	 * Renders the nodes on the canvas
+	 * @param nodeMatrix
+	 * @param graphicsContext
+	 * @param tileSize
+	 * @param windwoWidth
+	 * @param windowHeight
+	 * @param openList
+	 * @param closedList
+	 * @param startNode
+	 * @param endNode
+	 */
 	private void render(Node[][] nodeMatrix, GraphicsContext graphicsContext, int tileSize, int windwoWidth, int windowHeight, Set<Node> openList, Set<Node> closedList, Node startNode, Node endNode){
+		
+		// clear the canvas
 		graphicsContext.clearRect(0, 0, 1600, 800);
 
+		// loop through the node matrix and render the nodes
 		for(int x=0; x<nodeMatrix.length; x++) {
 			for(int y=0; y<nodeMatrix[0].length; y++) {
 
+				// get the node at the position
 				Node node = nodeMatrix[x][y];
 
-				
-
+				// if the node is passable, set the fill color to white
 				if(node.isPassable()){
 					graphicsContext.setFill(Color.WHITE);
 				}
-
+				// if the node is not passable, set the fill color to black
 				if(!node.isPassable()){
 					graphicsContext.setFill(Color.BLACK);
 				}
 
 				
-
+				// if the node is in the open list, set the fill color to yellow
 				if(openList != null && openList.contains(node)){
 					graphicsContext.setFill(Color.YELLOW);
 				}
-
+				// if the node is in the closed list, set the fill color to orange
 				if(closedList != null && closedList.contains(node)){
 					graphicsContext.setFill(Color.ORANGE);
 				}
-
+				// if the node is the way, set the fill color to green
 				if(node.isTheWay()){
 					graphicsContext.setFill(Color.GREEN);
 				}
-
+				// if the node is the start node, set the fill color to red
 				if(node.equals(startNode)){
 					graphicsContext.setFill(Color.RED);
 				}
-
+				// if the node is the end node, set the fill color to pink
 				if(node.equals(endNode)){
 					graphicsContext.setFill(Color.PINK);
 				}
 
 				
-				
+				// draw the node
 				graphicsContext.fillRect(x*tileSize, y*tileSize, tileSize, tileSize);
 				graphicsContext.strokeRect(x*tileSize, y*tileSize, tileSize, tileSize);
-					
 			}
 		}
 
